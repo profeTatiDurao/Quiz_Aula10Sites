@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz - EmailJS com JavaScript</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #2b2b3d;
+      padding: 30px;
+      width: 450px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #00ffff;
+    }
+
+    .pergunta {
+      text-align: left;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-left: 3px solid #00ffff;
+      background-color: #242436;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #00ffff;
+      color: #1e1e2f;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #00b3b3;
+    }
+
+    #resultado {
+      font-weight: bold;
+      margin-top: 20px;
+      color: #00ffff;
+    }
+
+    .correto {
+      color: #00ff7f;
+      font-weight: bold;
+    }
+
+    .errado {
+      color: #ff4040;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Quiz - Envio de E-mail com EmailJS</h1>
+
+    <form id="quizForm">
+      <div class="pergunta" id="q1box">
+        <p>1) Qual é a função do comando <code>emailjs.init('...')</code>?</p>
+        <label><input type="radio" name="q1" value="a"> Enviar o e-mail diretamente.</label><br>
+        <label><input type="radio" name="q1" value="b"> Inicializar o serviço EmailJS com a chave pública do usuário.</label><br>
+        <label><input type="radio" name="q1" value="c"> Criar um formulário HTML automaticamente.</label><br>
+        <label><input type="radio" name="q1" value="d"> Validar os campos do formulário.</label>
+      </div>
+
+      <div class="pergunta" id="q2box">
+        <p>2) Qual evento é usado para interceptar o envio do formulário?</p>
+        <label><input type="radio" name="q2" value="a"> form.onchange</label><br>
+        <label><input type="radio" name="q2" value="b"> form.addEventListener('submit', ...)</label><br>
+        <label><input type="radio" name="q2" value="c"> form.onhover</label><br>
+        <label><input type="radio" name="q2" value="d"> form.sendMail()</label>
+      </div>
+
+      <div class="pergunta" id="q3box">
+        <p>3) Qual método é utilizado para enviar os dados via EmailJS?</p>
+        <label><input type="radio" name="q3" value="a"> emailjs.sendForm()</label><br>
+        <label><input type="radio" name="q3" value="b"> emailjs.dispatch()</label><br>
+        <label><input type="radio" name="q3" value="c"> emailjs.send()</label><br>
+        <label><input type="radio" name="q3" value="d"> emailjs.submit()</label>
+      </div>
+
+      <div class="pergunta" id="q4box">
+        <p>4) Quais parâmetros são necessários para o método <code>emailjs.send()</code>?</p>
+        <label><input type="radio" name="q4" value="a"> Apenas o e-mail do destinatário.</label><br>
+        <label><input type="radio" name="q4" value="b"> O nome do serviço, o nome do template e os dados a serem enviados.</label><br>
+        <label><input type="radio" name="q4" value="c"> O nome do formulário e o ID do botão.</label><br>
+        <label><input type="radio" name="q4" value="d"> O nome do campo e o tipo de input.</label>
+      </div>
+
+      <div class="pergunta" id="q5box">
+        <p>5) O que acontece após o envio bem-sucedido do e-mail?</p>
+        <label><input type="radio" name="q5" value="a"> O formulário é deletado da página.</label><br>
+        <label><input type="radio" name="q5" value="b"> Uma mensagem de erro é exibida.</label><br>
+        <label><input type="radio" name="q5" value="c"> O formulário é resetado e um alerta de sucesso é exibido.</label><br>
+        <label><input type="radio" name="q5" value="d"> O navegador é redirecionado para outra página.</label>
+      </div>
+
+      <button type="button" onclick="corrigir()">Enviar Respostas</button>
+    </form>
+
+    <p id="resultado"></p>
+  </div>
+
+  <script>
+    function corrigir() {
+      let respostasCorretas = {
+        q1: "b", // emailjs.init inicializa com chave pública
+        q2: "b", // addEventListener('submit', ...)
+        q3: "c", // emailjs.send()
+        q4: "b", // service, template, dados
+        q5: "c"  // reset e alerta de sucesso
+      };
+
+      let pontos = 0;
+      let total = 5;
+      let form = document.getElementById("quizForm");
+
+      for (let q in respostasCorretas) {
+        let resposta = form[q].value;
+        let box = document.getElementById(q + "box");
+
+        let antigo = box.querySelector(".feedback");
+        if (antigo) antigo.remove();
+
+        let feedback = document.createElement("p");
+        feedback.classList.add("feedback");
+
+        if (resposta === respostasCorretas[q]) {
+          pontos++;
+          feedback.textContent = "✅ Correto!";
+          feedback.classList.add("correto");
+        } else {
+          let respostaCorretaTexto = "";
+          let labels = box.querySelectorAll('label input');
+          labels.forEach(input => {
+            if (input.value === respostasCorretas[q]) {
+              respostaCorretaTexto = input.parentNode.textContent.trim();
+            }
+          });
+
+          feedback.textContent = `❌ Errado. A resposta correta é: ${respostaCorretaTexto}`;
+          feedback.classList.add("errado");
+        }
+
+        box.appendChild(feedback);
+      }
+
+      document.getElementById("resultado").textContent =
+        `Você acertou ${pontos} de ${total} questões.`;
+    }
+  </script>
+</body>
+
+</html>
